@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Websocket Testing</title>
+    </head>
+    <body>
+        <form method="post" action="">
+            <input type="text" name="message">
+            <button type="submit">Send</button>
+        </form>
+
+        <ul id="messages"></ul>
+        
+        <script>
+            var form = document.getElementsByTagName('form')[0];
+            var input = form.getElementsByTagName('input')[0];
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '', true);
+                xhr.setRequestHeader('Content-Type', 'text/plain');
+                xhr.send(input.value);
+
+                input.value = '';
+            });
+
+            var messageList = document.getElementById('messages');
+            
+            var wsURL = 'ws://localhost:3000';
+            function startWS(url) {
+                var ws = new WebSocket(url);
+                ws.addEventListener('message', function(event) {
+                    var li = document.createElement('li');
+                    li.innerText = event.data;
+                    messageList.appendChild(li);
+                });
+                
+                ws.addEventListener('close', function(event) {
+                    setTimeout(function() {
+                        startWS(wsURL);
+                    }, 1000);
+                });
+            }
+            
+            startWS(wsURL);
+        </script>
+    </body>
+</html>
